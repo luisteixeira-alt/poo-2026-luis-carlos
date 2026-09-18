@@ -1,0 +1,262 @@
+class Veiculo:
+    def __init__(self, modelo, placa, valor_diaria):
+        self.__modelo = modelo
+        self.__placa = placa
+        self.__valor_diaria = valor_diaria
+
+    @property
+    def modelo(self):
+        return self.__modelo
+
+    @modelo.setter
+    def modelo(self, valor):
+        if not valor or not valor.strip():
+            raise ValueError("O modelo não pode ficar vazio.")
+        self.__modelo = valor
+
+    @property
+    def placa(self):
+        return self.__placa
+
+    @placa.setter
+    def placa(self, valor):
+        if not valor or not valor.strip():
+            raise ValueError("A placa não pode ficar vazia.")
+        self.__placa = valor
+
+    @property
+    def valor_diaria(self):
+        return self.__valor_diaria
+
+    @valor_diaria.setter
+    def valor_diaria(self, valor):
+        if valor <= 0:
+            raise ValueError("O valor da diária deve ser maior que zero.")
+        self.__valor_diaria = valor
+
+    def calcular_aluguel(self, dias):
+        if dias <= 0:
+            raise ValueError("A quantidade de dias deve ser maior que zero.")
+        return self.__valor_diaria * dias
+
+
+class Carro(Veiculo):
+    def __init__(self, modelo, placa, valor_diaria, portas):
+        super().__init__(modelo, placa, valor_diaria)
+
+        if portas <= 0:
+            raise ValueError("A quantidade de portas deve ser maior que zero.")
+
+        self.portas = portas
+
+    def calcular_aluguel(self, dias):
+        if dias <= 0:
+            raise ValueError("A quantidade de dias deve ser maior que zero.")
+
+        valor_base = super().calcular_aluguel(dias)
+        taxa_limpeza = 50.00
+
+        return valor_base + taxa_limpeza
+
+
+class Moto(Veiculo):
+    def __init__(self, modelo, placa, valor_diaria, cilindradas):
+        super().__init__(modelo, placa, valor_diaria)
+
+        if cilindradas <= 0:
+            raise ValueError("As cilindradas devem ser maiores que zero.")
+
+        self.cilindradas = cilindradas
+
+    def calcular_aluguel(self, dias):
+        if dias <= 0:
+            raise ValueError("A quantidade de dias deve ser maior que zero.")
+
+        valor_base = super().calcular_aluguel(dias)
+        desconto = valor_base * 0.10
+
+        return valor_base - desconto
+
+
+veiculos = []
+
+
+def cadastrar_carro():
+    try:
+        print("\n===== CADASTRO DE CARRO =====")
+
+        modelo = input("Modelo: ")
+        placa = input("Placa: ")
+        valor = float(input("Valor da diária: R$ "))
+        portas = int(input("Quantidade de portas: "))
+
+        carro = Carro(modelo, placa, valor, portas)
+        veiculos.append(carro)
+
+    except ValueError as erro:
+        print(f"\nErro no cadastro: {erro}")
+
+    else:
+        print("\nCarro cadastrado com sucesso!")
+
+    finally:
+        print("Operação de cadastro finalizada.")
+
+
+def cadastrar_moto():
+    try:
+        print("\n===== CADASTRO DE MOTO =====")
+
+        modelo = input("Modelo: ")
+        placa = input("Placa: ")
+        valor = float(input("Valor da diária: R$ "))
+        cilindradas = int(input("Cilindradas: "))
+
+        moto = Moto(modelo, placa, valor, cilindradas)
+        veiculos.append(moto)
+
+    except ValueError as erro:
+        print(f"\nErro no cadastro: {erro}")
+
+    else:
+        print("\nMoto cadastrada com sucesso!")
+
+    finally:
+        print("Operação de cadastro finalizada.")
+
+
+def listar_veiculos():
+    print("\n===== VEÍCULOS CADASTRADOS =====")
+
+    if not veiculos:
+        print("Nenhum veículo cadastrado.")
+        return
+
+    for indice, veiculo in enumerate(veiculos, start=1):
+        print(f"\nVeículo {indice}")
+        print(f"Tipo: {type(veiculo).__name__}")
+        print(f"Modelo: {veiculo.modelo}")
+        print(f"Placa: {veiculo.placa}")
+        print(f"Valor da diária: R$ {veiculo.valor_diaria:.2f}")
+
+        if isinstance(veiculo, Carro):
+            print(f"Portas: {veiculo.portas}")
+
+        elif isinstance(veiculo, Moto):
+            print(f"Cilindradas: {veiculo.cilindradas}")
+
+
+def calcular_alugueis():
+    if not veiculos:
+        print("\nNenhum veículo cadastrado.")
+        return
+
+    try:
+        dias = int(input("\nQuantos dias de aluguel? "))
+
+        if dias <= 0:
+            raise ValueError("A quantidade de dias deve ser maior que zero.")
+
+        print("\n===== VALORES DOS ALUGUÉIS =====")
+
+        total = 0
+
+        for veiculo in veiculos:
+            valor = veiculo.calcular_aluguel(dias)
+
+            print(
+                f"{type(veiculo).__name__} - "
+                f"{veiculo.modelo} - "
+                f"R$ {valor:.2f}"
+            )
+
+            total += valor
+
+        print("-------------------------------")
+        print(f"TOTAL: R$ {total:.2f}")
+
+    except ValueError as erro:
+        print(f"\nErro: {erro}")
+
+    finally:
+        print("Cálculo finalizado.")
+
+
+def buscar_veiculo():
+    try:
+        placa = input("\nDigite a placa do veículo: ")
+
+        for veiculo in veiculos:
+            if veiculo.placa.lower() == placa.lower():
+
+                print("\n===== VEÍCULO ENCONTRADO =====")
+                print(f"Tipo: {type(veiculo).__name__}")
+                print(f"Modelo: {veiculo.modelo}")
+                print(f"Placa: {veiculo.placa}")
+                print(f"Valor da diária: R$ {veiculo.valor_diaria:.2f}")
+
+                if isinstance(veiculo, Carro):
+                    print(f"Portas: {veiculo.portas}")
+
+                elif isinstance(veiculo, Moto):
+                    print(f"Cilindradas: {veiculo.cilindradas}")
+
+                return
+
+        raise LookupError("Veículo não encontrado.")
+
+    except LookupError as erro:
+        print(f"\nErro: {erro}")
+
+    except ValueError as erro:
+        print(f"\nErro: {erro}")
+
+    finally:
+        print("Busca finalizada.")
+
+
+def menu():
+    while True:
+        print("\n====================================")
+        print("   SISTEMA DE GESTÃO DE FROTA")
+        print("====================================")
+        print("1 - Cadastrar carro")
+        print("2 - Cadastrar moto")
+        print("3 - Listar veículos")
+        print("4 - Calcular aluguéis")
+        print("5 - Buscar veículo")
+        print("0 - Sair")
+        print("====================================")
+
+        try:
+            opcao = int(input("Escolha uma opção: "))
+
+        except ValueError:
+            print("\nErro: digite apenas números.")
+            continue
+
+        if opcao == 1:
+            cadastrar_carro()
+
+        elif opcao == 2:
+            cadastrar_moto()
+
+        elif opcao == 3:
+            listar_veiculos()
+
+        elif opcao == 4:
+            calcular_alugueis()
+
+        elif opcao == 5:
+            buscar_veiculo()
+
+        elif opcao == 0:
+            print("\nSistema encerrado. Até logo!")
+            break
+
+        else:
+            print("\nOpção inválida! Escolha uma opção do menu.")
+
+
+if __name__ == "__main__":
+    menu()
